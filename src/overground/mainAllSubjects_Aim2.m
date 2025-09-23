@@ -18,6 +18,10 @@ for subNum = 1:length(allSubjects)
     mainOneSubject_Aim2; % Run the main pipeline.
 end
 
+%% Load the 10MWT REDCap report
+tenMWTreportPath = "Y:\Spinal Stim_Stroke R01\AIM 2\Subject Data\REDCap Reports\SpinalStimStrokeAim2-10MWTAll_DATA_2025-09-23_1303.csv";
+tenMWTreportTable = load10MWTREDCapReport(tenMWTreportPath);
+
 %% Plot each subject
 allSubjectsPlot = runConfig.subjects.plot;
 for subNum = 1:length(allSubjectsPlot)
@@ -34,9 +38,9 @@ for subNum = 1:length(allSubjectsPlot)
 end
 
 %% Load the cycleTable and matchedCycleTable from all subjects
-configPath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01\src\overground\config.json';
+configPath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
 config = jsondecode(fileread(configPath));
-categoricalCols = {'Subject','Intervention','PrePost','Speed','Trial','Cycle','StartFoot'};
+categoricalCols = {'Subject','Intervention','Speed','Trial','Cycle','StartFoot'};
 cycleTableAll = readtable(config.PATHS.ALL_DATA_CSV.UNMATCHED);
 matchedCycleTableAll = readtable(config.PATHS.ALL_DATA_CSV.MATCHED);
 for i = 1:length(categoricalCols)
@@ -52,7 +56,7 @@ for i = 1:length(trialTableCategoricalCols)
 end
 
 %% Replace 'StartFoot' with 'Side'
-categoricalCols = {'Subject','Intervention','PrePost','Speed','Trial','Cycle','Side'};
+categoricalCols = {'Subject','Intervention','Speed','Trial','Cycle','Side'};
 if ismember('StartFoot', cycleTableAll.Properties.VariableNames)
     cycleTableAll.Side = cycleTableAll.StartFoot;
     cycleTableAll = removevars(cycleTableAll, 'StartFoot');
@@ -79,7 +83,7 @@ cycleTableContraRemovedScalarColumns = removevars(cycleTableContraRemoved, nonsc
 % Compute the symmetry values
 nonSubsetCatVars = {'Cycle','Side'};
 lrSidesCycleSymTable = calculateSymmetryAll(cycleTableContraRemovedScalarColumns, '_Sym', formulaNum, nonSubsetCatVars);
-categoricalColsTrial = {'Subject','Intervention','PrePost','Speed','Trial'};
+categoricalColsTrial = {'Subject','Intervention','Speed','Trial'};
 trialTableAllSym = trialTableAll;
 cycleTableAllSym = cycleTableContraRemovedScalarColumns;
 matchedCycleTableAllSym = addToTable(matchedCycleTableAll, lrSidesCycleSymTable);

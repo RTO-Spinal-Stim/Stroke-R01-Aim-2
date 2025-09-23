@@ -21,9 +21,9 @@
         "SUBJECT_ID": "SS\\d{2}",
         "INTERVENTIONS": [
             "BL",
-            "MID[12]",
+            "MID[18|24]",
             "MO[13]FU",
-            "POST[12]"
+            "POST[18|24]"
         ],
         "SPEED": "FV|SSV",
         "TRIAL": "[0-9]+$"
@@ -31,7 +31,7 @@
     "VIF_CUTOFF": 10,
     "NUM_POINTS": 101,
     "INTERVENTION_FOLDERS": [
-        "BL","MID1","MID2","MO1FU","MO3FU","POST1","POST2"
+        "BL","MID18","MID24","MO1FU","MO3FU","POST18","POST24"
     ],
     "TIMEPOINTS": [
         "PRE", "POST"
