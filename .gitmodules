@@ -1,3 +1,9 @@
 [submodule "Aim-1"]
 	path = Aim-1
 	url = https://github.com/RTO-Spinal-Stim/Stroke-R01
+[submodule "Aim1-test"]
+	path = Aim1-test
+	url = https://github.com/RTO-Spinal-Stim/Stroke-R01.git
+[submodule "Aim1-test2"]
+	path = Aim1-test2
+	url = https://github.com/RTO-Spinal-Stim/Stroke-R01

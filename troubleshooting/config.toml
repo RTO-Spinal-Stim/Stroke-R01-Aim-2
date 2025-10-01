@@ -1,0 +1,77 @@
+root_path = "Y:\\Spinal Stim_Stroke R01\\AIM 2\\Subject Data"
+
+session_order = [
+    "BL", "TX1", "TX2", "TX3", "TX4", "TX5", "TX6", "TX7", "TX8", "TX9", "MID18",
+    "TX10", "TX11", "TX12", "MID24", "TX13", "TX14", "TX15", "TX16", "TX17",
+    "TX18", "POST18", "TX19", "TX20", "TX21", "TX22", "TX23", "TX24",
+    "POST24", "MO1FU", "MO3FU",
+]
+
+gr_trainings = [
+    "TX4", "TX7", "TX10", "TX13", "TX16", "TX19", "TX22",
+]
+
+[expected_data_types_per_session]
+BL = ["EMG", "Gaitrite", "MVCs", "TEPs", "Videos", "XSENS"]
+MID18 = ["EMG", "Gaitrite", "MVCs", "TEPs", "Videos", "XSENS", "Actigraph"]
+MID24 = ["EMG", "Gaitrite", "MVCs", "TEPs", "Videos", "XSENS", "Actigraph"]
+POST18 = ["EMG", "Gaitrite", "MVCs", "TEPs", "Videos", "XSENS", "Actigraph"]
+POST24 = ["EMG", "Gaitrite", "MVCs", "TEPs", "Videos", "XSENS", "Actigraph"]
+MO1FU = ["EMG", "Gaitrite", "MVCs", "TEPs", "Videos", "XSENS", "Actigraph"]
+MO3FU = ["EMG", "Gaitrite", "MVCs", "TEPs", "Videos", "XSENS", "Actigraph"]
+TX_NO_GR = ["Polar"]
+TX_GR = ["Gaitrite", "Videos", "Polar"]
+
+## Regular expressions to identify data files
+# {session} will be replaced with the actual session ID when searching for files
+[[data_files]]
+type = "EMG"
+pattern = "SS[0-9]{2}_EMG_{session}_[FV|SSV][1-3]{1}.[adicht|mat]"
+num_files_per_ext = 6
+
+[[data_files]]
+type = "Gaitrite"
+pattern = "SS[0-9]{2}_{session}_GR_[FV|SSV].xlsx"
+num_files_per_ext = 2
+
+[[data_files]]
+type = "MVCs"
+pattern = "SS[0-9]{2}_MVCs_{session}_[Left|Right]_[Hip|Knee|Ankle]_[Flexors|Extensors].[adicht|mat]"
+num_files_per_ext = 12
+
+[[data_files]]
+type = "TEPs"
+pattern = "SS[0-9]{2}_TEPs_{session}.[adicht|mat]"
+num_files_per_ext = 1
+
+[[data_files]]
+type = "Actigraph"
+pattern = "SS[0-9]{2} ([0-9]{4}-[0-9]{2}-[0-9]{2})10sec.[csv|agd|gt3x]"
+num_files_per_ext = 1
+
+[[data_files]]
+type = "XSENS"
+pattern = "SS[0-9]{2}_XSENS_{session}_[FV|SSV]-00[1-3].[mvn|xlsx]"
+num_files_per_ext = 6
+
+[[data_files]]
+type = "Videos"
+pattern = "*.[MOV|AAE]"
+num_files_per_ext = 6
+
+## The list of subjects and their last completed session
+[[subjects]]
+id = "SS02"
+last_session = "TX3"
+
+[[subjects]]
+id = "SS09"
+last_session = "MID24"
+
+[[subjects]]
+id = "SS10"
+last_session = "TX19"
+
+[[subjects]]
+id = "SS21"
+last_session = "BL"

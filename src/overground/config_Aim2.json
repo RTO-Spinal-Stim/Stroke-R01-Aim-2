@@ -21,9 +21,9 @@
         "SUBJECT_ID": "SS\\d{2}",
         "INTERVENTIONS": [
             "BL",
-            "MID[18|24]",
+            "MID(18|24)",
             "MO[13]FU",
-            "POST[18|24]"
+            "POST(18|24)"
         ],
         "SPEED": "FV|SSV",
         "TRIAL": "[0-9]+$"
@@ -44,6 +44,7 @@
         "SS32_SHAM2_PRE_SSV_3."
     ],
     "DELSYS_EMG": {
+        "MVC_FOLDER_NAME": "MVCs",
         "FOLDER_NAME": "EMG",
         "FILE_EXTENSION": "*.mat",
         "SAMPLING_FREQUENCY": 2000,
@@ -53,6 +54,11 @@
             "MG",
             "TA",
             "VL"
+        ],
+        "MVC_CATEGORICAL_COLUMNS": [
+            "Subject",
+            "Intervention",
+            "Muscle"
         ],
         "CATEGORICAL_COLUMNS": [
             "Subject",
@@ -71,7 +77,17 @@
             "LOWPASS_ORDER": 2,
             "LOWPASS_CUTOFF": 5        
         },
-        "VAF_THRESHOLD": 0.9
+        "VAF_THRESHOLD": 0.9,
+        "MVC_MUSCLE_MAPPING": {
+            "Left_Ankle_Flexors": "LTA",
+            "Left_Ankle_Extensors": "LMG",
+            "Left_Knee_Extensors": ["LVL", "LRF"],
+            "Left_Knee_Flexors": "LHAM",
+            "Right_Ankle_Flexors": "RTA",
+            "Right_Ankle_Extensors": "RMG",
+            "Right_Knee_Extensors": ["RVL", "RRF"],
+            "Right_Knee_Flexors": "RHAM"
+        }
     },
     "GAITRITE": {
         "FOLDER_NAME": "Gaitrite",

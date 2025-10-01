@@ -1,0 +1,4 @@
+Subject_ID,Session,Missing_File,
+SS02,BL,SS02 MVCs: Expected 12 .adicht|mat files," found 0 (pattern: ""SS[0-9]{2}_MVCs_BL_[Left|Right]_[Hip|Knee|Ankle]_[Flexors|Extensors].adicht|mat"")"
+SS10,MID18,SS10 MVCs: Expected 12 .adicht|mat files," found 0 (pattern: ""SS[0-9]{2}_MVCs_MID18_[Left|Right]_[Hip|Knee|Ankle]_[Flexors|Extensors].adicht|mat"")"
+SS21,BL,SS21 MVCs: Expected 12 .adicht|mat files," found 11 (pattern: ""SS[0-9]{2}_MVCs_BL_[Left|Right]_[Hip|Knee|Ankle]_[Flexors|Extensors].adicht|mat"")"

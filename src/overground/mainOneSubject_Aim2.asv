@@ -120,20 +120,14 @@ delsysDownsampledTable = downsampleAllData(cycleTable, 'Delsys_Filtered', 'Delsy
 cycleTable = addToTable(cycleTable, xsensDownsampledTable);
 cycleTable = addToTable(cycleTable, delsysDownsampledTable);
 
-%% Load the MVC data
-subject_mvc_folder = fullfile(subjectLoadPath, delsysConfig.MVC_FOLDER_NAME);
-mvcTable = loadMVCAllInterventions(delsysConfig, subject_mvc_folder, intervention_folders, mapped_interventions, regexsConfig, missingFilesPartsToCheck);
-
-%% Filter MVC
-mvcTableFiltered = filterDelsys(mvcTable, 'MVC_Loaded', 'MVC_Filtered', delsysConfig.FILTER, delsysConfig.SAMPLING_FREQUENCY);
-mvcTable = addToTable(mvcTable, mvcTableFiltered);
+%% 
 
 %% Identify the max EMG data value across one whole visit (all trials & gait cycles)
-maxEMGTable = maxEMGValuePerVisit(mvcTable, 'MVC_Filtered', 'Max_EMG_Value', delsysConfig.MVC_MUSCLE_MAPPING);
+maxEMGTable = maxEMGValuePerVisit(cycleTable, 'Delsys_TimeNormalized', 'Max_EMG_Value');
 visitTable = addToTable(visitTable, maxEMGTable);
 
 %% Normalize the time-normalized EMG data to the max value across one whole visit (all trials & gait cycles)
-normalizedEMGTable = normalizeAllDataToVisitValue(cycleTable, 'Delsys_TimeNormalized', mvcTable, 'Max_EMG_Value', 'Delsys_Normalized_TimeNormalized', 2);
+normalizedEMGTable = normalizeAllDataToVisitValue(cycleTable, 'Delsys_TimeNormalized', visitTable, 'Max_EMG_Value', 'Delsys_Normalized_TimeNormalized', 2);
 cycleTable = addToTable(cycleTable, normalizedEMGTable);
 
 %% Get % gait cycle when peaks occur
