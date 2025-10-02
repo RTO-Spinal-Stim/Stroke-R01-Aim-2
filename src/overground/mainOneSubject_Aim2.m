@@ -264,7 +264,14 @@ mergeVarNames = T.Properties.VariableNames(~ismember(T.Properties.VariableNames,
 cycleTable.Cycle = categorical(regexprep(string(cycleTable.Cycle),leadingZeroRegex,''));
 mergedCycleTable = mergeTables(grDistributedTable, cycleTable, mergeVarNames);
 
+%% Make sure the cycles maintain the proper order.
 matchedCycleTable.Cycle = categorical(regexprep(string(matchedCycleTable.Cycle),leadingZeroRegex,''));
+cycleOrder = string(1:max(str2double(string(matchedCycleTable.Cycle))));
+matchedCycleTable.Cycle = reordercats(matchedCycleTable.Cycle, cycleOrder);
+
+mergedCycleTable.Cycle = categorical(regexprep(string(mergedCycleTable.Cycle),leadingZeroRegex,''));
+cycleOrder = string(1:max(str2double(string(mergedCycleTable.Cycle))));
+mergedCycleTable.Cycle = reordercats(mergedCycleTable.Cycle, cycleOrder);
 
 %% Save the cycle table and the matched cycle table to the all data CSV file
 addOneParticipantDataToAllDataCSV(mergedCycleTable, config.PATHS.ALL_DATA_CSV.UNMATCHED);
