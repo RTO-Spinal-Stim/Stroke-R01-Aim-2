@@ -34,7 +34,7 @@ addpath(genpath(pathsConfig.CODE_FOLDER_PATH));
 trialTable = table; % Each row is one trial, all data
 cycleTable = table; % Each row is one UNMATCHED gait cycle, all data
 visitTable = table; % Each row is one whole session
-speedPrePostTable = table; % Each row is one combination of SSV/FV & Pre/Post
+speedInterventionTable = table; % Each row is one combination of SSV/FV & Pre/Post
 cycleTableContraRemoved = table; % Each row is one UNMATCHED gait cycle, with the contralateral data removed and column names merged
 
 %% GaitRite Load
@@ -133,7 +133,7 @@ maxEMGTable = maxEMGValuePerVisit(mvcTable, 'MVC_Filtered', 'Max_EMG_Value', del
 visitTable = addToTable(visitTable, maxEMGTable);
 
 %% Normalize the time-normalized EMG data to the max value across one whole visit (all trials & gait cycles)
-normalizedEMGTable = normalizeAllDataToVisitValue(cycleTable, 'Delsys_TimeNormalized', mvcTable, 'Max_EMG_Value', 'Delsys_Normalized_TimeNormalized', 2);
+normalizedEMGTable = normalizeAllDataToVisitValue(cycleTable, 'Delsys_TimeNormalized', visitTable, 'Max_EMG_Value', 'Delsys_Normalized_TimeNormalized', 2);
 cycleTable = addToTable(cycleTable, normalizedEMGTable);
 
 %% Get % gait cycle when peaks occur
@@ -216,22 +216,24 @@ if doPlot
 end
 
 %% Average the data within one SSV/FV & pre/post combination.
-avgTableXSENS = avgStructAll(matchedCycleTable, 'XSENS_TimeNormalized', 'XSENS_Averaged', 4);
-avgTableDelsys = avgStructAll(matchedCycleTable, 'Delsys_TimeNormalized', 'Delsys_Averaged', 4);
-speedPrePostTable = addToTable(speedPrePostTable, avgTableXSENS);
-speedPrePostTable = addToTable(speedPrePostTable, avgTableDelsys);
+avgTableXSENS = avgStructAll(matchedCycleTable, 'XSENS_TimeNormalized', 'XSENS_Averaged', 3);
+avgTableDelsys = avgStructAll(matchedCycleTable, 'Delsys_TimeNormalized', 'Delsys_Averaged', 3);
+speedInterventionTable = addToTable(speedInterventionTable, avgTableXSENS);
+speedInterventionTable = addToTable(speedInterventionTable, avgTableDelsys);
 
 %% SPM Analysis for EMG & XSENS
-spmTableXSENS = SPManalysisAll(matchedCycleTable, 'XSENS_TimeNormalized', 'XSENS_SPM', jointsL, jointsR);
-spmTableDelsys = SPManalysisAll(matchedCycleTable, 'Delsys_TimeNormalized', 'Delsys_SPM', musclesL, musclesR);
-speedPrePostTable = addToTable(speedPrePostTable, spmTableXSENS);
-speedPrePostTable = addToTable(speedPrePostTable, spmTableDelsys);
+alphaValue = 0.05;
+levelNum = 3;
+spmTableXSENS = SPManalysisAll(matchedCycleTable, 'XSENS_TimeNormalized', 'XSENS_SPM', jointsL, jointsR, alphaValue, levelNum);
+spmTableDelsys = SPManalysisAll(matchedCycleTable, 'Delsys_TimeNormalized', 'Delsys_SPM', musclesL, musclesR, alphaValue, levelNum);
+speedInterventionTable = addToTable(speedInterventionTable, spmTableXSENS);
+speedInterventionTable = addToTable(speedInterventionTable, spmTableDelsys);
 
 %% Calculate the magnitude and duration of L vs. R differences obtained from SPM in one visit.
-magDurTableXSENS = magsDursDiffsLR_All(speedPrePostTable, 'XSENS_SPM', 'XSENS_Averaged', 'XSENS_MagsDiffs');
-magDurTableDelsys = magsDursDiffsLR_All(speedPrePostTable, 'Delsys_SPM', 'Delsys_Averaged', 'Delsys_MagsDiffs');
-speedPrePostTable = addToTable(speedPrePostTable, magDurTableXSENS);
-speedPrePostTable = addToTable(speedPrePostTable, magDurTableDelsys);
+magDurTableXSENS = magsDursDiffsLR_All(speedInterventionTable, 'XSENS_SPM', 'XSENS_Averaged', 'XSENS_MagsDiffs');
+magDurTableDelsys = magsDursDiffsLR_All(speedInterventionTable, 'Delsys_SPM', 'Delsys_Averaged', 'Delsys_MagsDiffs');
+speedInterventionTable = addToTable(speedInterventionTable, magDurTableXSENS);
+speedInterventionTable = addToTable(speedInterventionTable, magDurTableDelsys);
 
 %% Calculate root mean squared error (RMSE)
 rmseTableXSENS = calculateLRRMSEAll(matchedCycleTable, 'XSENS_TimeNormalized', 'RMSE_JointAngles');
@@ -268,7 +270,7 @@ matchedCycleTable.Cycle = categorical(regexprep(string(matchedCycleTable.Cycle),
 addOneParticipantDataToAllDataCSV(mergedCycleTable, config.PATHS.ALL_DATA_CSV.UNMATCHED);
 addOneParticipantDataToAllDataCSV(matchedCycleTable, config.PATHS.ALL_DATA_CSV.MATCHED);
 addOneParticipantDataToAllDataCSV(trialTable, config.PATHS.ALL_DATA_CSV.TRIAL);
-% addOneParticipantDataToAllDataCSV(visitTable, config.PATHS.ALL_DATA_CSV.VISIT);
+addOneParticipantDataToAllDataCSV(visitTable, config.PATHS.ALL_DATA_CSV.VISIT);
 
 %% Save the structs to the participant's save folder.
 subjectSavePath = fullfile(subjectSaveFolder, [subject '_' saveFileName]);
@@ -276,6 +278,6 @@ if ~isfolder(subjectSaveFolder)
     mkdir(subjectSaveFolder);
 end
 cycleTable = mergedCycleTable;
-save(subjectSavePath, 'visitTable', 'speedPrePostTable', 'trialTable', 'cycleTable', 'matchedCycleTable');
+save(subjectSavePath, 'visitTable', 'speedInterventionTable', 'trialTable', 'cycleTable', 'matchedCycleTable');
 disp(['Saved ' subject ' tables to: ' subjectSavePath]);
 
