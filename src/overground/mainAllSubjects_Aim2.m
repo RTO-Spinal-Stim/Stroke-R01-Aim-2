@@ -12,8 +12,7 @@ addpath(genpath('Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\Aim-1\src\over
 %% Iterate over each subject
 doPlot = false;
 for subNum = 1:length(allSubjects)
-    subject = allSubjects{subNum};    
-    subjectSavePath = fullfile(config.PATHS.ROOT_SAVE, subject, [subject '_' config.PATHS.SAVE_FILE_NAME]);
+    subject = allSubjects{subNum};        
     disp(['Now running subject (' num2str(subNum) '/' num2str(length(allSubjects)) '): ' subject]);
     mainOneSubject_Aim2; % Run the main pipeline.
 end

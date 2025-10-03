@@ -1,4 +1,21 @@
 {    
+    "TX": {
+        "PATHS": {
+            "SAVE_FILE_NAME": "GaitRite_TX.mat",
+            "ALL_DATA_CSV": "Y:\\LabMembers\\MTillman\\SavedOutcomesAim2\\TX\\FromMATLAB\\0_from_matlab_unmatched.csv"
+        },
+        "REGEXS": {
+            "INTERVENTIONS": [
+                "TX[0-9]{1,2}"
+            ]
+        },
+        "INTERVENTION_FOLDERS": [
+            "TX\\TX4", "TX\\TX7", "TX\\TX10", "TX\\TX13", "TX\\TX16", "TX\\TX19", "TX\\TX22"
+        ],
+        "MAPPED_INTERVENTIONS": [
+            "TX4", "TX7", "TX10", "TX13", "TX16", "TX19", "TX22"
+        ]
+    },
     "PATHS": {
         "ROOT_LOAD": "Y:\\Spinal Stim_Stroke R01\\AIM 2\\Subject Data",
         "ROOT_SAVE": "Y:\\LabMembers\\MTillman\\SavedOutcomesAim2\\StrokeSpinalStim",
