@@ -13,49 +13,51 @@ reportTable = table;
 rawReport = readtable(reportPath);
 
 assessmentSessionMappings = {
-    1,'BL';
-    2,'MID18';
-    3,'MID24';
-    4,'POST18';
-    5,'POST24';
-    6,'MO1FU';
-    7,'MO3FU'
+    'Baseline', 'BL';
+    'Midpoint #1', 'MID18';
+    'Midpoint #2', 'MID24';
+    'Post #1', 'POST18';
+    'Post #2', 'POST24'
 };
 
 trainingSessionMappings = {
-    2.04,'4';
-    2.07,'7';
-    2.1,'10';
-    2.13,'13';
-    2.16,'16';
-    2.19,'19';
-    2.22,'22';
+    4,'TX4';
+    7,'TX7';
+    10,'TX10';
+    13,'TX13';
+    16,'TX16';
+    19,'TX19';
+    22,'TX22';
 };
 
 for i = 1:height(rawReport)
     row = rawReport(i,:);
     tmpTable = table;
-    tmpTable.Subject = row.record_id;
-    mapping = NaN;
-    if ~isnan(row.visit)
-        sessionRaw = row.visit;
+    tmpTable.Subject = row.RecordID;
+    
+    sessionRaw = row.EventName;
+    if contains(sessionRaw, 'Assessment')
+        visitName = row.WhichAssessmentVisitIsThis_;
         mapping = assessmentSessionMappings;
-    elseif ~isnan(row.timepoint)
-        sessionRaw = row.timepoint;
+        mappingFirstCol = mapping(:,1);
+    else
+        visitName = row.TrainingSession_;
         mapping = trainingSessionMappings;
+        mappingFirstCol = cell2mat(mapping(:,1));
     end
-    sessionIdx = ismember(cell2mat(mapping(:,1)), sessionRaw);
+    sessionIdx = ismember(mappingFirstCol, visitName);
+   
     session = mapping{sessionIdx, 2};
     tmpTable.Session = {session};
-    tmpTable.AverageSSVTime_Seconds = row.ssv_avgtime;
-    tmpTable.AverageSSVSpeed_MPS = row.ssv;
-    tmpTable.AverageFVTime_Seconds = row.fv_avgtime;
-    tmpTable.AverageFVSpeed_MPS = row.fv;
+    tmpTable.AverageSSVTime_Seconds = row.AverageSSVTime;
+    tmpTable.AverageSSVSpeed_MPS = row.AverageSelfSelectedGaitSpeed;
+    tmpTable.AverageFVTime_Seconds = row.AverageFVTime;
+    tmpTable.AverageFVSpeed_MPS = row.AverageFastGaitSpeed;
     reportTable = [reportTable; tmpTable];
 end
 
 %% Sort the rows of each subject
-sortOrder = {'BL','4','7','MID18','10','MID24','13','16','POST18','19','22','POST24'};
+sortOrder = {'BL','TX4','TX7','MID18','TX10','MID24','TX13','TX16','POST18','TX19','TX22','POST24'};
 subjects = unique(reportTable.Subject,'stable');
 reportTableOrdered = table;
 for i = 1:length(subjects)

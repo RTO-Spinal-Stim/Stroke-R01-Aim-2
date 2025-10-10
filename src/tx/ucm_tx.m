@@ -41,7 +41,6 @@ rootSavePath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\plots\UCM_TX';
 
 for varNum = 1:length(outcomeVarsNames)
     varName = outcomeVarsNames{varNum};
-    % varName = 'SwingDurations_GR';
     varColIdx = ismember(varNames, varName);
 
     for subjectNum = 1:length(subjects)
@@ -129,11 +128,10 @@ for varNum = 1:length(outcomeVarsNames)
 
             currColor = colors.(intervention);
 
-            % Plot
-            % line([0 meanVal],[meanVal, 0],'Color','black','LineStyle','-');             
-            scatter(meanData(1), meanData(2), 100, 'sq', 'MarkerFaceColor', currColor, 'MarkerEdgeColor','k');
+            % Plot                        
             hold on;
             scatter(aggData(:,1), aggData(:,2), 'MarkerFaceColor', currColor, 'MarkerEdgeColor','none');            
+            scatter(meanData(1), meanData(2), 100, 'sq', 'MarkerFaceColor', currColor, 'MarkerEdgeColor','k');
             xlabel('Affected');
             ylabel('Unaffected');
             title({[varName ' Mean: ' num2str(meanVal / 2) ' DV: ' num2str(DV)], ...

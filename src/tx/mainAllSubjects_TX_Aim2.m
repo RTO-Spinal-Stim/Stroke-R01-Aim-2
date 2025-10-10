@@ -19,8 +19,14 @@ for subNum = 1:length(allSubjects)
 end
 
 %% Load the 10MWT REDCap report
-tenMWTreportPath = "Y:\Spinal Stim_Stroke R01\AIM 2\Subject Data\REDCap Reports\SpinalStimStrokeAim2-10MWTAll_DATA_2025-09-23_1303.csv";
+tenMWTreportPath = "Y:\Spinal Stim_Stroke R01\AIM 2\Subject Data\REDCap Reports\SpinalStimStrokeAim2-10MWTAll_DATA_LABELS_2025-10-08_1045.csv";
 tenMWTreportTable = load10MWTREDCapReport(tenMWTreportPath);
+plot10MWTOneSubject(tenMWTreportTable, 'SS10', 'SSV','mps');
+
+%% Load the stim intensity REDCap report
+txParametersReportPath = "Y:\Spinal Stim_Stroke R01\AIM 2\Subject Data\REDCap Reports\SpinalStimStrokeAim2-TrainingParameters_DATA_2025-10-06_0912.csv";
+txParametersTable = loadTXParametersREDCApReport(txParametersReportPath);
+plotStimIntensitiesOverTimeOneSubject(txParametersTable, 'SS09', false);
 
 %% Load the cycleTable and matchedCycleTable from all subjects
 configPath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
@@ -39,14 +45,6 @@ if ismember('StartFoot', cycleTableAll.Properties.VariableNames)
 end
 cycleTableAll = movevars(cycleTableAll,'Side','After','Cycle');
 
-%% Calculate symmetries
-formulaNum = 6; % computing Sym using the original equation * 100
-[colNamesL, colNamesR] = getLRColNames(cycleTableAll);
-% Compute the symmetry values
-nonSubsetCatVars = {'Cycle','Side'};
-cycleTableAllSym = calculateSymmetryAll(cycleTableAll, '_Sym', formulaNum, nonSubsetCatVars);
-categoricalColsTrial = {'Subject','Intervention','Speed','Trial'};
-
 %% Adjust intervention name to mapped names
 interventions = config.TX.INTERVENTION_FOLDERS;
 mapped_interventions = config.TX.MAPPED_INTERVENTIONS;
@@ -57,6 +55,7 @@ for i = 1:height(cycleTableAllSym)
 end
 
 %% Adjust the L & R sides to "U" and "A" for unaffected and affected sides
+addpath(genpath('Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\Aim-1\src\MEPs\MEPs Processing AIM 1'));
 subjectDemographicsPath = "Y:\Spinal Stim_Stroke R01\AIM 2\Subject Data\Subject Demographics Aim 2.xlsx";
 demographics = readExcelFileOneSheet(subjectDemographicsPath, 'Subject', 'Sheet1');
 colNames = {'Subject', 'PareticSide'};
@@ -68,8 +67,17 @@ reducedDemographics = unique(demographics(:, colNamesIdx), 'rows');
 % Omit the subjects from demographics that are not in the data tables
 subjectIdx = ismember(string(reducedDemographics.Subject), string(cycleTableAll.Subject));
 reducedDemographics(~subjectIdx,:) = [];
-cycleTableAllUA = convertLeftRightSideToAffectedUnaffected(cycleTableAllSym, reducedDemographics, inputTableSideCol, demographicsSideCol);
+cycleTableAll_UA = convertLeftRightSideToAffectedUnaffected(cycleTableAll, reducedDemographics, inputTableSideCol, demographicsSideCol);
+
+%% Calculate symmetries
+formulaNum = 6; % computing Sym using the original equation * 100
+[colNamesL, colNamesR] = getLRColNames(cycleTableAll_UA);
+% Compute the symmetry values
+nonSubsetCatVars = {'Cycle','Side'};
+cycleTableAllSym_UA = calculateSymmetryAll(cycleTableAll_UA, '_Sym', formulaNum, nonSubsetCatVars);
+categoricalColsTrial = {'Subject','Intervention','Speed','Trial'};
 
 %% Save the unaffected and affected side tables
 tablesPathPrefixMergedUA = 'Y:\LabMembers\MTillman\SavedOutcomesAim2\TX\MergedTablesAffectedUnaffected';
-writetable(cycleTableAllUA, fullfile(tablesPathPrefixMergedUA, 'unmatchedCycles.csv'));
+writetable(cycleTableAllSym_UA, fullfile(tablesPathPrefixMergedUA, 'unmatchedCycles_Sym.csv'));
+writetable(cycleTableAll_UA, fullfile(tablesPathPrefixMergedUA, 'unmatchedCycles.csv'));
