@@ -26,7 +26,10 @@ plot10MWTOneSubject(tenMWTreportTable, 'SS10', 'SSV','mps');
 %% Load the stim intensity REDCap report
 txParametersReportPath = "Y:\Spinal Stim_Stroke R01\AIM 2\Subject Data\REDCap Reports\SpinalStimStrokeAim2-TrainingParameters_DATA_2025-10-06_0912.csv";
 txParametersTable = loadTXParametersREDCApReport(txParametersReportPath);
-plotStimIntensitiesOverTimeOneSubject(txParametersTable, 'SS09', false);
+% Plot Training Variables
+% 'stim'  : plot stimulation intensities of a session across all sessions
+% 'tread' : plot treadmill speeds of a session across all sessions
+plotTrainingVariablesOverTimeOneSubject(txParametersTable, 'SS10', false, 'tread');
 
 %% Load the cycleTable and matchedCycleTable from all subjects
 configPath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
