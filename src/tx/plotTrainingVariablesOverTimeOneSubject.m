@@ -1,12 +1,14 @@
-function [] = plotTrainingVariablesOverTimeOneSubject(reportTable, subject, overlap, var)
+function [] = plotTrainingVariablesOverTimeOneSubject(reportTable, subject, overlap, trainingVariable)
 
 %% PURPOSE: PLOT THE CONTINUOUS TRAINING VARIABLE ('StimIntensities' OR 'TreadmillSpeeds' FOR EACH MINUTE FOR EACH TX SESSION
 % Inputs:
 % reportTable: The table containing all stim intensities and treadmill speeds for all subjects
 % subject: The subject of interest to plot
 % overlap: boolean to indicate whether each tx's line should overlap
-% var: Variable of interest to plot ('stimIntensities' or
-% 'treadmillSpeeds'
+% trainingVariable: Variable of interest to plot ('stim' or 'tread')
+%
+%       'stim'  : plot stimulation intensities of a session across all sessions
+%       'tread' : plot treadmill speeds of a session across all sessions
 %
 % Outputs:
 % fig: The generated figure
@@ -27,11 +29,11 @@ sessionLabels = cell(size(p));
 txTicks = NaN(numRowsOneSubject,1);
 
 % Choose variable & labels
-if strcmp(var,'stim')
+if strcmp(trainingVariable,'stim')
     variable = subjectTable.StimIntensities;
     yLabelStr = 'Stimulation Intensity (mA)';
     titleStr = [subject ' TX Stimulation Intensities'];
-elseif strcmp(var,'tread')
+elseif strcmp(trainingVariable,'tread')
     variable = subjectTable.TreadmillSpeeds;
     yLabelStr = 'Treadmill Speed (m/s)';
     titleStr = [subject ' TX Treadmill Speeds'];
