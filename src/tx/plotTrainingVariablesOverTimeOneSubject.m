@@ -1,10 +1,12 @@
-function [] = plotStimIntensitiesOverTimeOneSubject(reportTable, subject, overlap)
+function [] = plotTrainingVariablesOverTimeOneSubject(reportTable, subject, overlap, var)
 
-%% PURPOSE: PLOT THE STIMULATION INTENSITIES FOR EACH MINUTE FOR EACH TX SESSION
+%% PURPOSE: PLOT THE CONTINUOUS TRAINING VARIABLE ('StimIntensities' OR 'TreadmillSpeeds' FOR EACH MINUTE FOR EACH TX SESSION
 % Inputs:
-% reportTable: The table containing all stim intensities for all subjects
+% reportTable: The table containing all stim intensities and treadmill speeds for all subjects
 % subject: The subject of interest to plot
 % overlap: boolean to indicate whether each tx's line should overlap
+% var: Variable of interest to plot ('stimIntensities' or
+% 'treadmillSpeeds'
 %
 % Outputs:
 % fig: The generated figure
@@ -22,12 +24,27 @@ subjectTable = reportTable(subjectRowsIdx,:);
 numRowsOneSubject = height(subjectTable);
 p = gobjects(numRowsOneSubject,1);
 sessionLabels = cell(size(p));
-cmap = turbo(numRowsOneSubject);
 txTicks = NaN(numRowsOneSubject,1);
+
+% Choose variable & labels
+if strcmp(var,'stim')
+    variable = subjectTable.StimIntensities;
+    yLabelStr = 'Stimulation Intensity (mA)';
+    titleStr = [subject ' TX Stimulation Intensities'];
+elseif strcmp(var,'tread')
+    variable = subjectTable.TreadmillSpeeds;
+    yLabelStr = 'Treadmill Speed (m/s)';
+    titleStr = [subject ' TX Treadmill Speeds'];
+else
+    disp('You must specify which variable to plot: stim or tread');
+    return;
+end
+
+
+% Plot variable over sessions
 for i = 1:numRowsOneSubject
-    stimIntensities = subjectTable.StimIntensities{i};
-    % stimIntensities(stimIntensities==0) = NaN; % Remove the large lines to zero
-    xOverlap = 0:length(stimIntensities)-1;
+    data = variable{i};
+    xOverlap = 0:length(data)-1;
     x = xOverlap;
     if ~overlap
         x = x + 45*(i-1);
@@ -38,17 +55,21 @@ for i = 1:numRowsOneSubject
     else
         color = 'b';
     end
-    p(i) = plot(ax, x, stimIntensities, 'Color', color);
+    p(i) = plot(ax, x, data, 'Color', color);
     sessionLabels{i} = ['TX' num2str(i)];
     p(i).DataTipTemplate.DataTipRows(end+1) = dataTipTextRow('Session', repmat(sessionLabels(i), size(x)));    
 end
+
 xlim([0 max(x) + 45]);
 xticks(txTicks);
 xticklabels(sessionLabels);
 
 xlabel('TX sessions');
-ylabel('Stimulation Intensity (mA)');
+ylabel(yLabelStr);
+title(titleStr);
 
-title([subject ' TX Stimulation Intensities']);
- 
 % legend(p, sessionLabels, 'AutoUpdate', 'off');
+
+end
+ 
+
