@@ -4,12 +4,12 @@
 % Comment this part out when running all subjects at once.
 clc;
 clearvars;
+addpath(genpath(pwd));
 subject = 'SS10';
-configFilePath = 'Y:\LabMembers\Ameen\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
+configFilePath = 'src\overground\config_Aim2.json';
 config = jsondecode(fileread(configFilePath));
 disp(['Loaded configuration from: ' configFilePath]);
 doPlot = false;
-addpath(genpath('Y:\LabMembers\Ameen\Stroke-R01-Aim-2'));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Get configuration
 intervention_folders = config.INTERVENTION_FOLDERS;
