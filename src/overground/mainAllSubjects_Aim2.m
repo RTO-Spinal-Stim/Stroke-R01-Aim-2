@@ -1,13 +1,16 @@
+% add branch files to path
+addpath(genpath(fullfile(pwd, 'Aim-1\src\overground')));
 % Run from src/overground folder
-configPath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
+configPath = 'src\overground\config_Aim2.json';
 config = jsondecode(fileread(configPath));
 
+% Path to matlab packages, downloaded from file exchange, do not change.
 addpath(genpath('Y:\LabMembers\MTillman\MATLAB_FileExchange_Repository'));
 
 runConfig = toml.map_to_struct(toml.read('subjects_to_run.toml'));
 allSubjects = runConfig.subjects.run;
 
-addpath(genpath('Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\Aim-1\src\overground'));
+
 
 %% Iterate over each subject
 doPlot = false;
@@ -37,7 +40,7 @@ for subNum = 1:length(allSubjectsPlot)
 end
 
 %% Load the cycleTable and matchedCycleTable from all subjects
-configPath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
+configPath = 'src\overground\config_Aim2.json';
 config = jsondecode(fileread(configPath));
 categoricalCols = {'Subject','Intervention','Speed','Trial','Cycle','StartFoot'};
 cycleTableAll = readtable(config.PATHS.ALL_DATA_CSV.UNMATCHED);
@@ -118,7 +121,7 @@ cycleTableAllUA = convertLeftRightSideToAffectedUnaffected(cycleTableAllSym, red
 matchedCycleTableAllUA = convertLeftRightSideToAffectedUnaffected(matchedCycleTableAllSym, reducedDemographics, inputTableSideCol, demographicsSideCol);
 
 %% Save the unaffected and affected side tables
-tablesPathPrefixMergedUA = 'Y:\LabMembers\MTillman\SavedOutcomesAim2\Overground_EMG_Kinematics\MergedTablesAffectedUnaffected';
+tablesPathPrefixMergedUA = 'results\from_matlab\Overground_EMG_Kinematics\MergedTablesAffectedUnaffected';
 writetable(trialTableAllUA, fullfile(tablesPathPrefixMergedUA, 'trialTableAll.csv'));
 writetable(matchedCycleTableAllUA, fullfile(tablesPathPrefixMergedUA, 'matchedCycles.csv'));
 writetable(cycleTableAllUA, fullfile(tablesPathPrefixMergedUA, 'unmatchedCycles.csv'));
