@@ -2,7 +2,7 @@
     "TX": {
         "PATHS": {
             "SAVE_FILE_NAME": "GaitRite_TX.mat",
-            "ALL_DATA_CSV": "Y:\\LabMembers\\MTillman\\SavedOutcomesAim2\\TX\\FromMATLAB\\0_from_matlab_unmatched.csv"
+            "ALL_DATA_CSV": "../../SavedOutcomesAim2\\TX\\0_FromMATLAB_NonSym\\0_from_matlab_unmatched.csv"
         },
         "REGEXS": {
             "INTERVENTIONS": [
@@ -18,17 +18,17 @@
     },
     "PATHS": {
         "ROOT_LOAD": "Y:\\Spinal Stim_Stroke R01\\AIM 2\\Subject Data",
-        "ROOT_SAVE": "Y:\\LabMembers\\MTillman\\SavedOutcomesAim2\\StrokeSpinalStim",
+        "ROOT_SAVE": "Y:/Spinal Stim_Stroke R01/AIM 2/Subject Data/MATLAB Processed Overground_EMG_Kinematics",
         "SAVE_FILE_NAME": "Overground_EMG_Kinematics.mat",
-        "CODE_FOLDER_PATH": "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01-Aim-2\\src\\overground",
+        "CODE_FOLDER_PATH": "Stroke-R01-Aim-2\\src\\overground",
         "ALL_DATA_CSV": {
-            "UNMATCHED": "Y:\\LabMembers\\MTillman\\SavedOutcomesAim2\\Overground_EMG_Kinematics\\FromMATLAB\\0_from_matlab_unmatched.csv",
-            "MATCHED": "Y:\\LabMembers\\MTillman\\SavedOutcomesAim2\\Overground_EMG_Kinematics\\FromMATLAB\\0_from_matlab_matched.csv",
-            "TRIAL": "Y:\\LabMembers\\MTillman\\SavedOutcomesAim2\\Overground_EMG_Kinematics\\FromMATLAB\\0_from_matlab_trial.csv",
-            "VISIT":"Y:\\LabMembers\\MTillman\\SavedOutcomesAim2\\Overground_EMG_Kinematics\\FromMATLAB\\0_from_matlab_visit.csv"
+            "UNMATCHED": "../../SavedOutcomesAim2/Overground_EMG_Kinematics/0_FromMATLAB_NonSym/0_from_matlab_unmatched.csv",
+            "MATCHED":   "../../SavedOutcomesAim2/Overground_EMG_Kinematics/0_FromMATLAB_NonSym/0_from_matlab_matched.csv",
+            "TRIAL":     "../../SavedOutcomesAim2/Overground_EMG_Kinematics/0_FromMATLAB_NonSym/0_from_matlab_trial.csv",
+            "VISIT":     "../../SavedOutcomesAim2/Overground_EMG_Kinematics/0_FromMATLAB_NonSym/0_from_matlab_visit.csv"
         },
         "PLOTS": {
-            "ROOT": "Y:\\LabMembers\\MTillman\\GitRepos\\SavedOutcomesAim2\\plots",
+            "ROOT": "../../SavedOutcomesAim2\\plots",
             "FILTERED_NON_TIME_NORMALIZED": "Filtered_GaitCycles",
             "FILTERED_TIME_NORMALIZED": "Filtered_TimeNormalized",
             "FILTERED_TIME_NORMALIZED_UNSCALED": "Filtered_TimeNormalized_Unscaled"
