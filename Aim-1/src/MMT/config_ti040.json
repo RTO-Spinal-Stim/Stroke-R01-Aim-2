@@ -1,0 +1,41 @@
+{
+    "FOLDERS": [
+        "Y:\\Tech Immersion\\Patients\\ti040_NM\\MVCs"
+    ],
+    "PATHS_TO_ADD": [
+        "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\src\\overground"
+    ],
+    "REMAPPING": {
+    },
+    "FILTER": {
+        "BANDPASS_ORDER": 4,
+        "BANDPASS_CUTOFF": [
+            10, 
+            400
+        ],
+        "LOWPASS_ORDER": 2,
+        "LOWPASS_CUTOFF": 5        
+    },
+    "IGNORE_FILES": [
+    ],
+    "INCLUDE_FILES": [
+        "R_plantarflex.mat"
+    ],
+    "RECTIFY": 0,
+    "MOTION_MUSCLE_MAPPING": {
+        "L_dorsiflex": "LTA",
+        "R_dorsiflex": "RTA",
+        "L_plantarflex": "LMG",
+        "R_plantarflex": "RMG",
+        "L_hipabd": "LGMED",
+        "R_hipabd": "RGMED",
+        "L_hipadd": "LADD",
+        "R_hipadd": "RADD",
+        "L_hipflex": "LRF",
+        "R_hipflex": "RRF",
+        "L_kneeext": ["LRF", "LVL"],
+        "R_kneeext": ["RRF", "RVL"],
+        "L_kneeflex": "LHAM",
+        "R_kneeflex": "RHAM"
+    }
+}

@@ -1,0 +1,114 @@
+{
+    "FOLDERS": [
+        "Y:\\Tech Immersion\\Patients\\SY\\MMT 07_24_25",
+        "Y:\\Tech Immersion\\Patients\\SY\\MMT 07_30_25"
+    ],
+    "PATHS_TO_ADD": [
+        "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\src\\overground"
+    ],
+    "REMAPPING": {
+        "MGisAB_TAisOblique": {
+            "RMG": "RAB",
+            "RTA": "ROB",
+            "LMG": "LAB",
+            "LTA": "LOB"
+        }
+    },
+    "MOTION_MUSCLE_MAPPING": {
+        "Left_DorsiFlexion": "LTA",
+        "Right_DorsiFlexion": "RTA",
+        "Left_PlantarFlexion": "LMG",
+        "Right_PlantarFlexion": "RMG",
+        "Right_PlantarFlexor": "RMG",
+        "Left_elbowExtension": "LTRI",
+        "Right_elbowExtension": "RTRI",
+        "Left_elbowFlexion": "LBI",
+        "Right_elbowFlexion": "RBI",
+        "Left_fingerExtension": "LED",
+        "Right_fingerExtension": "RED",
+        "Left_fingerFlexion": "LFDP",
+        "Right_fingerFlexion": "RFDP",
+        "Left_GluteKick": "LHAM",
+        "Right_Glute": "RHAM",
+        "Left_HipABD": "LABD",
+        "Right_ABD": "RABD",
+        "Right_ADD": "RADD",
+        "Left_HipFlexion": ["LADD", "LRF"],
+        "Right_HipFlexion": ["RADD", "RRF"],    
+        "Left_HipExtension": "LHAM",
+        "Right_HipExtension": "RHAM",    
+        "Left_KneeFlexion": "LHAM",
+        "Right_KneeFlexion": "RHAM",
+        "Left_KneeExtension": ["LRF", "LVL"],
+        "Right_KneeExtension": ["RRF", "RVL"],
+        "Left_ThumbOpposition": "LAPB",
+        "Right_ThumbOpposition": "RAPB",
+        "Left_wristExtension": ["LBRAD", "LED"],
+        "Right_wristExtension": ["RBRAD", "RED"],
+        "Left_wristFlexion": "LFDP",
+        "Right_wristFlexion": "RFDP",
+        "SWITCH_PRE_TO_POST": "FOR AESTHETICS ONLY TO BREAK PRE VS. POST",
+        "Right_handSqueeze": "RAPB",
+        "Left_handSqueeze": "LFDP",
+        "Left_Abduction": "LABD",
+        "Right_Abduction": "RABD",
+        "Left_Adduction": "LADD",
+        "Right_Adduction": "RADD",
+        "Left_SeatedKneeExt": ["LRF", "LVL"],
+        "Right_SeatedKneeExt": ["RRF", "RVL"]
+    },
+    "MUSCLE_NAMES": {
+        "LTA": "Left Tibialis Anterior",
+        "LMG": "Left Medial Gastrocnemius",
+        "LGMED": "Left Gluteus Medius",
+        "LADD": "Left Adductor Magnus",
+        "LABD": "Left Gluteus Medius",
+        "LRF": "Left Rectus Femoris",
+        "LVL": "Left Vastus Lateralis",
+        "LHAM": "Left Hamstring",
+        "LTRI": "Left Triceps",
+        "LBI": "Left Biceps",
+        "LED": "Left Extensor Digitorum",
+        "LFDP": "Left Flexor Digitorum Profundus",
+        "LAPB": "Left Abductor Pollicis Brevis",
+        "LBRAD": "Left Brachioradialis",
+        "RTA": "Right Tibialis Anterior",
+        "RMG": "Right Medial Gastrocnemius",
+        "RGMED": "Right Gluteus Medius",
+        "RADD": "Right Adductor Magnus",
+        "RABD": "Right Gluteus Medius",
+        "RRF": "Right Rectus Femoris",
+        "RVL": "Right Vastus Lateralis",
+        "RHAM": "Right Hamstring",
+        "RTRI": "Right Triceps",
+        "RBI": "Right Biceps",
+        "RED": "Right Extensor Digitorum",
+        "RFDP": "Right Flexor Digitorum Profundus",
+        "RAPB": "Right Abductor Pollicis Brevis",
+        "RBRAD": "Right Brachioradialis",
+        "LAB": "Left Rectus Abdominus",
+        "LOB": "Left Obliques",
+        "RAB": "Right Rectus Abdominus",
+        "ROB": "Right Obliques"
+    },
+    "FILTER": {
+        "BANDPASS_ORDER": 4,
+        "BANDPASS_CUTOFF": [
+            10, 
+            400
+        ],
+        "LOWPASS_ORDER": 2,
+        "LOWPASS_CUTOFF": 5        
+    },
+    "IGNORE_FILES": [
+        "SitToStand"
+    ],
+    "RECTIFY": 0,
+    "AESTHETICS": {
+        "LINE_WIDTH": 1,
+        "COMMENT_FONT_SIZE": 12,
+        "TICK_FONT_SIZE": 14,
+        "LABEL_FONT_SIZE": 16,
+        "HIGHLIGHT_COLOR": [0.9922, 0.4157, 0]
+    }
+}

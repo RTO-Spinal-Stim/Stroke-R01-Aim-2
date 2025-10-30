@@ -1,0 +1,23 @@
+This pipeline was developed with the purpose of obtaining results after a single MEPs sessions
+Targeted for Tech Emmergent sessions or PEDs, where the participant comes in and 
+the interest is to obtain a RMT to have a reference for the stimulation intensity to use or to see if there was a muscle response. 
+
+MAIN CODE:
+A_Smers_processing_dataPrep.m
+
+Inputs: 
+
+From the session need to know:
+- The number of trials done per intensity (usually 5 but less could be done in the interest of time)
+- The indices of the bad pulses
+
+
+Example input files to run: 
+Y:\Tech Immersion\Patients\ti011_TR\LabChart\Raw data (assume no bad trials)
+
+Output:
+see word doc
+
+
+
+

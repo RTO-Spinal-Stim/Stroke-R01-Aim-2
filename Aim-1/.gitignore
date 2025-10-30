@@ -1,0 +1,16 @@
+
+*.mat
+*.asv
+*.png
+*.db
+*.fig
+*.svg
+*.css
+*.js
+*.map
+*.scss
+*.html
+*jquery-AUTHORS.txt
+*.pyc
+*.pdf
+.DS_Store

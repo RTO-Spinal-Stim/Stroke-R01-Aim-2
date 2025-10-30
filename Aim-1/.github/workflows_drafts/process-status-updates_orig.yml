@@ -1,0 +1,146 @@
+# .github/workflows/process-status-updates.yml
+name: Process Status Updates
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-status-update:
+    if: contains(github.event.issue.title, 'Status Update')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Extract and process status data
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const issue = context.payload.issue;
+          const issueBody = issue.body;
+          
+          // Extract JSON data from the comment
+          const dataMatch = issueBody.match(/<!-- STATUS_UPDATE_DATA\n([\s\S]*?)\n-->/);
+          if (!dataMatch) {
+            console.log('No status update data found in issue');
+            return;
+          }
+          
+          let updates;
+          try {
+            updates = JSON.parse(dataMatch[1]);
+          } catch (error) {
+            console.log('Failed to parse status update data:', error);
+            return;
+          }
+          
+          console.log('Processing updates:', updates);
+          
+          // Process each update
+          for (const update of updates) {
+            const { issue_number, status, comment, user } = update;
+            
+            // Prepare the comment text
+            let updateComment = `**Status Update by @${user}:**\n`;
+            updateComment += `Status: ${getStatusEmoji(status)} ${status.replace('_', ' ')}\n`;
+            
+            if (comment) {
+              updateComment += `\nComment: ${comment}`;
+            }
+            
+            try {
+              // Add comment to the target issue
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number,
+                body: updateComment
+              });
+              
+              // Update issue labels based on status
+              const labelsToAdd = getLabelsForStatus(status);
+              const labelsToRemove = ['status:in-progress', 'status:completed', 'status:blocked', 'status:needs-review'];
+              
+              // Get current labels
+              const { data: currentIssue } = await github.rest.issues.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number
+              });
+              
+              const currentLabels = currentIssue.labels.map(label => 
+                typeof label === 'string' ? label : label.name
+              );
+              
+              // Remove old status labels and add new ones
+              const newLabels = currentLabels
+                .filter(label => !labelsToRemove.includes(label))
+                .concat(labelsToAdd);
+              
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number,
+                labels: newLabels
+              });
+              
+              // Close issue if completed
+              if (status === 'completed') {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue_number,
+                  state: 'closed'
+                });
+              }
+              
+              console.log(`Updated issue #${issue_number}`);
+              
+            } catch (error) {
+              console.log(`Failed to update issue #${issue_number}:`, error);
+            }
+          }
+          
+          // Close the status update issue
+          await github.rest.issues.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue.number,
+            state: 'closed'
+          });
+          
+          // Add a summary comment
+          const summaryComment = `✅ Status updates processed successfully!\n\n` +
+            `Updated ${updates.length} issue(s):\n` +
+            updates.map(u => `- #${u.issue_number}: ${getStatusEmoji(u.status)} ${u.status.replace('_', ' ')}`).join('\n');
+          
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue.number,
+            body: summaryComment
+          });
+          
+          function getStatusEmoji(status) {
+            const emojis = {
+              'in_progress': '🔄',
+              'completed': '✅',
+              'blocked': '🚫',
+              'needs_review': '👀'
+            };
+            return emojis[status] || '📝';
+          }
+          
+          function getLabelsForStatus(status) {
+            const labelMap = {
+              'in_progress': ['status:in-progress'],
+              'completed': ['status:completed'],
+              'blocked': ['status:blocked'],
+              'needs_review': ['status:needs-review']
+            };
+            return labelMap[status] || [];
+          }
+

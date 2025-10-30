@@ -1,0 +1,18 @@
+01/09/2025
+
+This code was purposed to (kind of) automatically process the MEPs of AIM 1. 
+
+Pipeline:
+
+A_Smers_processing_dataPrep.m
+B_Smers_P2P_AUC.m
+C_Smers_RecruitmentCurves.m
+
+Input:
+Y:\Spinal Stim_Stroke R01\AIM 1\Subject Data\SSXX\TEPs\INTERVENTION
+
+Pre or Post mat files
+
+
+Output:
+should save mats in the
