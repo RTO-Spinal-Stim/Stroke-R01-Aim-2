@@ -2,14 +2,14 @@
 % The main pipeline for R01 Stroke Spinal Stim Aim 2 (using tables)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Comment this part out when running all subjects at once.
+addpath(genpath(pwd));
 clc;
 clearvars;
 subject = 'SS10';
-configFilePath = 'Y:\LabMembers\Ameen\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
+configFilePath = 'src\overground\config_Aim2.json';
 config = jsondecode(fileread(configFilePath));
 disp(['Loaded configuration from: ' configFilePath]);
 doPlot = false;
-addpath(genpath('Y:\LabMembers\Ameen\Stroke-R01-Aim-2'));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Get configuration
 intervention_folders = config.INTERVENTION_FOLDERS;
