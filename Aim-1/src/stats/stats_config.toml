@@ -1,0 +1,114 @@
+analysis_name = "Subject_Intervention_Speed"
+
+all_factor_columns = [
+    "Subject",
+    "Intervention",
+    "SessionOrder",
+    "Is_Stim",
+    "Frequency",
+    "Intensity",
+    "Speed",
+    "Trial",
+    "Cycle",
+    "Side",
+]
+
+[paths]
+wd = "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\src\\RCode"
+helper_functions = "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\src\\RCode\\plotter\\plotter_helper_functions"
+data_file = "Y:\\LabMembers\\MTillman\\SavedOutcomes\\StrokeSpinalStim\\Overground_EMG_Kinematics\\MergedTablesAffectedUnaffected\\matchedCyclesPrePost.csv"
+root_save = "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\results\\stats"
+
+[plots]
+grouping_factors = [
+    "Speed",
+    "Intervention",             
+]
+fill_factor = "Subject"
+
+# [[plots.sig_diff_bars]]
+# color = "black"
+# metrics = ["HIP_RMSE_JointAngles_Diff"]
+# Intervention = [
+#     "SHAM1",
+#     "SHAM2",
+#     "RMT30",
+#     "RMT50",
+#     "TOL30",
+#     "TOL50",
+# ]
+
+[plots.colors.Intervention]
+SHAM1 = "#1b9e77"
+SHAM2 = "#d95f02"
+RMT30 = "#7570b3"
+RMT50 = "#e7298a"
+TOL30 = "#66a61e"
+TOL50 = "#e6ab02"
+
+[plots.colors.Speed]
+SSV = "#1b9e77"
+FV = "#d95f02"
+
+[plots.colors.Side]
+A = "#1b9e77"
+U = "#d95f02"
+
+[stats]
+factors_in_model = [
+    "Subject", 
+    "Intervention", 
+    "Speed",
+]
+emmeans_formula = "~ Intervention * Speed"
+
+[stats.lmer]
+lmer_formula = "~ Intervention * Speed + (1 | Subject)"
+fixed_effects_formula = "~ Intervention * Speed"
+random_effect_factor = "Subject"
+# random_effect_formula = "~ 1 + {outcome}" # Random intercept & slope for subjects
+random_effect_formula = "~ 1" # Random intercept for subjects
+vc_formula.Subject_Intervention = "0+C(Subject):C(Intervention)"
+vc_formula.Subject_Intervention_Speed = "0+C(Subject):C(Intervention):C(Speed)"
+vc_formula.Subject_Intervention_Speed_Trial = "0+C(Subject):C(Intervention):C(Speed):C(Trial)"
+
+[factor_levels_to_keep]
+# Define the levels to keep for each factor.
+# If a factor is not listed here, all levels will be kept.
+
+[factor_levels_to_remove]
+# Define the levels to remove from each factor. 
+# If a factor is not listed here, no levels will be removed.
+# Same syntax as [factors_levels_order]
+
+# Define the order of the levels in each factor
+[factors_levels_order]
+Intervention = [
+    "SHAM1",
+    "SHAM2",
+    "RMT30",
+    "RMT50",
+    "TOL30",
+    "TOL50",
+]
+SessionOrder = [1, 2, 3, 4, 5, 6]
+Is_Stim = [
+    "STIM",
+    "NO_STIM",
+]
+Frequency = [
+    "30",
+    "50",
+]
+Intensity = [
+    "RMT",
+    "TOL",
+]
+Speed = [
+    "SSV",
+    "FV",
+]
+Side = [
+    "A",
+    "U",
+]

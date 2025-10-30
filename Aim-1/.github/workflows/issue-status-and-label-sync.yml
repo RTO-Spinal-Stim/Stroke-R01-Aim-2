@@ -1,0 +1,277 @@
+name: Sync Issue Status and Closure State
+
+# For GitHub Projects v2 (newer projects)
+on:
+  issues:
+    types: [edited, closed, reopened]
+
+jobs:
+  sync-issue-status:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Sync issue status and closure state
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            const action = context.payload.action;
+            
+            // GraphQL queries for reading and updating project status
+            const readQuery = `
+              query($owner: String!, $repo: String!, $number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  issue(number: $number) {
+                    projectItems(first: 10) {
+                      nodes {
+                        id
+                        project {
+                          id
+                        }
+                        fieldValues(first: 10) {
+                          nodes {
+                            ... on ProjectV2ItemFieldSingleSelectValue {
+                              name
+                              field {
+                                ... on ProjectV2SingleSelectField {
+                                  name
+                                  id
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            
+            const variables = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              number: issue.number
+            };
+            
+            try {
+              const result = await github.graphql(readQuery, variables);
+              const projectItems = result.repository.issue.projectItems.nodes;
+              
+              if (action === 'edited') {
+                // Handle status changes (scenarios 1 & 2)
+                for (const item of projectItems) {
+                  for (const fieldValue of item.fieldValues.nodes) {
+                    if (fieldValue.field && fieldValue.field.name === 'Status') {
+                      const status = fieldValue.name;
+                      
+                      if (status === 'Done' && issue.state === 'open') {
+                        // Scenario 1: Status "Done" -> Close as completed
+                        await github.rest.issues.update({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: issue.number,
+                          state: 'closed'
+                        });
+                        console.log(`Closed issue #${issue.number} as completed - Status changed to Done`);
+                        return;
+                      }
+                      
+                      if (status === 'Not Doing' && issue.state === 'open') {
+                        // Scenario 2: Status "Not Doing" -> Close as not planned
+                        await github.rest.issues.update({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: issue.number,
+                          state: 'closed',
+                          state_reason: 'not_planned'
+                        });
+                        console.log(`Closed issue #${issue.number} as not planned - Status changed to Not Doing`);
+                        return;
+                      }
+                    }
+                  }
+                }
+              }
+              
+              if (action === 'reopened') {
+                // Handle issue reopening - update status to indicate work is resuming
+                // Don't auto-close even if status is "Done" or "Not Doing"
+                for (const item of projectItems) {
+                  let statusFieldId = null;
+                  let currentStatus = null;
+                  
+                  for (const fieldValue of item.fieldValues.nodes) {
+                    if (fieldValue.field && fieldValue.field.name === 'Status') {
+                      statusFieldId = fieldValue.field.id;
+                      currentStatus = fieldValue.name;
+                      break;
+                    }
+                  }
+                  
+                  // If reopened and status is "Done" or "Not Doing", change to "In Progress" or similar
+                  if (statusFieldId && (currentStatus === 'Done' || currentStatus === 'Not Doing')) {
+                    // Get the available options for the status field
+                    const fieldQuery = `
+                      query($projectId: ID!, $fieldId: ID!) {
+                        node(id: $projectId) {
+                          ... on ProjectV2 {
+                            field(id: $fieldId) {
+                              ... on ProjectV2SingleSelectField {
+                                options {
+                                  id
+                                  name
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    `;
+                    
+                    const fieldResult = await github.graphql(fieldQuery, {
+                      projectId: item.project.id,
+                      fieldId: statusFieldId
+                    });
+                    
+                    const options = fieldResult.node.field.options;
+                    // Look for common "in progress" status names
+                    const progressStatuses = ['In Progress', 'Todo', 'To Do', 'Backlog', 'Open'];
+                    let targetOption = null;
+                    
+                    for (const statusName of progressStatuses) {
+                      targetOption = options.find(opt => opt.name === statusName);
+                      if (targetOption) break;
+                    }
+                    
+                    // Fallback to first available option that's not Done/Not Doing
+                    if (!targetOption) {
+                      targetOption = options.find(opt => 
+                        opt.name !== 'Done' && 
+                        opt.name !== 'Not Doing'
+                      );
+                    }
+                    
+                    if (targetOption) {
+                      // Update the project item status
+                      const updateMutation = `
+                        mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                          updateProjectV2ItemFieldValue(input: {
+                            projectId: $projectId
+                            itemId: $itemId
+                            fieldId: $fieldId
+                            value: $value
+                          }) {
+                            projectV2Item {
+                              id
+                            }
+                          }
+                        }
+                      `;
+                      
+                      await github.graphql(updateMutation, {
+                        projectId: item.project.id,
+                        itemId: item.id,
+                        fieldId: statusFieldId,
+                        value: {
+                          singleSelectOptionId: targetOption.id
+                        }
+                      });
+                      
+                      console.log(`Issue #${issue.number} reopened - Updated status from "${currentStatus}" to "${targetOption.name}"`);
+                    }
+                  }
+                }
+              }
+              
+              if (action === 'closed') {
+                // Handle issue closure (scenarios 3 & 4)
+                const stateReason = issue.state_reason;
+                let targetStatus = null;
+                
+                if (stateReason === 'completed') {
+                  // Scenario 3: Closed as completed -> Set status to "Done"
+                  targetStatus = 'Done';
+                } else if (stateReason === 'not_planned') {
+                  // Scenario 4: Closed as not planned -> Set status to "Not Doing"
+                  targetStatus = 'Not Doing';
+                }
+                
+                if (targetStatus) {
+                  // Find the project item and status field to update
+                  for (const item of projectItems) {
+                    let statusFieldId = null;
+                    let currentStatus = null;
+                    
+                    for (const fieldValue of item.fieldValues.nodes) {
+                      if (fieldValue.field && fieldValue.field.name === 'Status') {
+                        statusFieldId = fieldValue.field.id;
+                        currentStatus = fieldValue.name;
+                        break;
+                      }
+                    }
+                    
+                    if (statusFieldId && currentStatus !== targetStatus) {
+                      // Get the available options for the status field
+                      const fieldQuery = `
+                        query($projectId: ID!, $fieldId: ID!) {
+                          node(id: $projectId) {
+                            ... on ProjectV2 {
+                              field(id: $fieldId) {
+                                ... on ProjectV2SingleSelectField {
+                                  options {
+                                    id
+                                    name
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      `;
+                      
+                      const fieldResult = await github.graphql(fieldQuery, {
+                        projectId: item.project.id,
+                        fieldId: statusFieldId
+                      });
+                      
+                      const options = fieldResult.node.field.options;
+                      const targetOption = options.find(opt => opt.name === targetStatus);
+                      
+                      if (targetOption) {
+                        // Update the project item status
+                        const updateMutation = `
+                          mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                            updateProjectV2ItemFieldValue(input: {
+                              projectId: $projectId
+                              itemId: $itemId
+                              fieldId: $fieldId
+                              value: $value
+                            }) {
+                              projectV2Item {
+                                id
+                              }
+                            }
+                          }
+                        `;
+                        
+                        await github.graphql(updateMutation, {
+                          projectId: item.project.id,
+                          itemId: item.id,
+                          fieldId: statusFieldId,
+                          value: {
+                            singleSelectOptionId: targetOption.id
+                          }
+                        });
+                        
+                        console.log(`Updated issue #${issue.number} status to "${targetStatus}" - Issue closed as ${stateReason}`);
+                      }
+                    }
+                  }
+                }
+              }
+              
+            } catch (error) {
+              console.log('Error syncing issue status:', error);
+            }

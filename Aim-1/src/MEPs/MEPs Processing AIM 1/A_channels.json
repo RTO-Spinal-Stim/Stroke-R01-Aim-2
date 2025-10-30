@@ -1,0 +1,26 @@
+{
+    "DEFAULT": [
+        "RHAM", "RRF", "RMG", "RVL", "LHAM", "LRF", "LMG", "LTA", "LVL", "RTA"
+    ],
+    "SS08": {
+        "30_RMT": [
+            "RHAM", "RRF", "RMG", "RVL", "LHAM", "LRF", "LMG", "LTA", "LVL", "RTA"
+        ]
+    },
+    "SS09": {
+        "SHAM2": [
+            "RHAM", "RRF", "RMG", "RVL", "LHAM", "LRF", "LMG", "LTA", "LVL", "RTA"
+        ]
+    },
+    "SS10": {
+        "SHAM2": [
+            "RHAM", "RRF", "RMG", "RVL", "LHAM", "LRF", "LMG", "LTA", "LVL", "RTA"
+        ],
+        "30_RMT": [
+            "RHAM", "RRF", "RMG", "RVL", "LHAM", "LRF", "LMG", "LTA", "LVL", "RTA"
+        ],
+        "50_RMT": [
+            "RHAM", "RRF", "RMG", "RVL", "LHAM", "LRF", "LMG", "LTA", "LVL", "RTA"
+        ]
+    }
+}

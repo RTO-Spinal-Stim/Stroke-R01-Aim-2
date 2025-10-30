@@ -1,0 +1,26 @@
+{
+    "FOLDERS": [
+        "Y:\\LabMembers\\NicoleV\\AbuDhabi\\Data\\Upper arm function EMG"
+    ],
+    "PATHS_TO_ADD": [
+        "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\src\\overground"
+    ],
+    "REMAPPING": {
+        "MGisAB_TAisOblique": {
+            "RMG": "RAB",
+            "RTA": "ROB",
+            "LMG": "LAB",
+            "LTA": "LOB"
+        }
+    },
+    "FILTER": {
+        "BANDPASS_ORDER": 4,
+        "BANDPASS_CUTOFF": [
+            10, 
+            400
+        ],
+        "LOWPASS_ORDER": 2,
+        "LOWPASS_CUTOFF": 5        
+    },
+    "RECTIFY": 0
+}

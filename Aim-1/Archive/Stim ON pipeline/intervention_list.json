@@ -1,0 +1,8 @@
+{
+    "DEFAULT": [
+        "30RMT", "30TOL", "50RMT", "50TOL", "SHAM"
+    ],
+    "SSCY": [
+        "30SLOWSPEED", "50SLOWSPEED"
+    ]
+}

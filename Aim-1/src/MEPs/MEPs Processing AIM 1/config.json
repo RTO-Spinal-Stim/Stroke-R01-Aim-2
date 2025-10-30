@@ -1,0 +1,66 @@
+{
+    "USER_INITIALS": "MT",
+    "NUM_PULSES_PER_INTENSITY": 5,
+    "SAMPLE_RATE": 2000,
+    "INTERVAL_MA": 10,
+    "LOWPASS_FILTER": {
+        "ORDER": 5,
+        "LOWPASS_CUTOFF": 450
+    },
+    "BANDPASS_FILTER": {
+        "LOW_CUTOFF": 20,
+        "HIGH_CUTOFF": 500,
+        "ORDER": 5
+    },
+    "PEAKS": {
+        "MIN_PEAK_PROMINENCE": 0.1,
+        "MIN_PEAK_HEIGHT": 0.1,
+        "MIN_PEAK_WIDTH": 0.001
+    },
+    "PLOT_METHOD": "BandPass",
+    "RECTIFIED_METHOD": "RectifiedSmoothed_AfterAligned",
+    "WINDOW_DURATION": 0.003,
+    "SUBJ_PATH_SUFFIX": "TEPs",    
+    "INTERVENTION_FOLDERS": [
+        "30_RMT", "30_TOL", "50_RMT", "50_TOL", "SHAM1", "SHAM2"
+    ],
+    "MAPPED_INTERVENTION_FIELDS": [
+        "RMT30", "TOL30", "RMT50", "TOL50", "SHAM1", "SHAM2"
+    ],
+    "SAVE_FILENAMES": {
+        "A": "ProcessedTEPs_PartA.mat",
+        "B": {
+            "LOG": "ProcessedCombinations.xlsx",
+            "DATA": "ProcessedTEPs_PartB.mat"
+        }
+    },
+    "SAVE_FOLDER": "Y:\\LabMembers\\MTillman\\SavedOutcomes\\StrokeSpinalStim",
+    "PLOT_TROUBLESHOOT_FOLDER": "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\Plots\\MEPsDerivs",
+    "AIM1_FOLDER": "Y:\\Spinal Stim_Stroke R01\\AIM 1",
+    "TEPS_LOG_COLUMN_NAMES": {
+        "PRE_POST_COLUMN": "Pre_Post",
+        "TEP_FILENAME": "TEP_Filename",
+        "SUBJECT_NAME": "Subject",
+        "PARETIC_SIDE": "PareticSide",
+        "TIMEPOINT": "Date",
+        "SESSION_CODE": "SessionCode",
+        "PULSES_TO_DELETE": "PulsesToRemove"
+    },
+    "MUSCLES": [
+        "RRF", 
+        "LRF", 
+        "RHAM", 
+        "LHAM", 
+        "RVL", 
+        "LVL", 
+        "RTA", 
+        "LTA", 
+        "RMG", 
+        "LMG"
+    ],
+    "COLORS": [
+        [0, 0, 1, 0.1],
+        [0.9290, 0.6940, 0.1250],
+        [1, 0, 0, 0.5]
+    ]
+}
