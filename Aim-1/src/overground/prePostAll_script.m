@@ -1,0 +1,12 @@
+TprePost1 = calculatePrePostChangeAll(T, 1, levelNum);
+TprePost2 = calculatePrePostChangeAll(T, 2, levelNum);
+TprePost = join(TprePost1, TprePost2, 'Keys', {'Subject','Intervention','Trial','Cycle','Is_Stim','Intensity','Speed'});
+TprePost.Frequency = TprePost.Frequency_TprePost1;
+TprePost.CGAM = TprePost.CGAM_TprePost1;
+TprePost.SessionOrder = TprePost.SessionOrder_TprePost1;
+TprePost = removevars(TprePost, {'SessionOrder_TprePost1', 'Frequency_TprePost1', 'CGAM_TprePost1'});
+TprePost = removevars(TprePost, {'SessionOrder_TprePost2', 'Frequency_TprePost2', 'CGAM_TprePost2'});
+vars = {'Subject','Intervention','Is_Stim','Intensity','SessionOrder','Frequency','Speed','Trial','Cycle','CGAM','CGAM_Diff','CGAM_PercDiff'};
+TprePost = TprePost(:, vars);
+TprePostPath = "Y:\LabMembers\MTillman\SavedOutcomes\StrokeSpinalStim\Overground_EMG_Kinematics\MergedTablesAffectedUnaffected\matchedCyclesPrePost_CGAM.csv";
+writetable(TprePost, TprePostPath);

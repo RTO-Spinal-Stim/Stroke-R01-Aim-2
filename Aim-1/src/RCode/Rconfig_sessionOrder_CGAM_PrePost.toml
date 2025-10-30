@@ -1,0 +1,116 @@
+analysis_name = "Subject_SessionOrder_CGAM_PrePost"
+
+all_factor_columns = [
+    "Subject",
+    "Intervention",
+    "SessionOrder",
+    "Is_Stim",
+    # "PrePost",
+    "Frequency",
+    "Intensity",
+    "Speed",
+    "Trial",
+    "Cycle",
+    # "Side",
+]
+
+[paths]
+wd = "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\src\\RCode"
+helper_functions = "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\src\\RCode\\plotter\\plotter_helper_functions"
+data_file = "Y:\\LabMembers\\MTillman\\SavedOutcomes\\StrokeSpinalStim\\Overground_EMG_Kinematics\\MergedTablesAffectedUnaffected\\matchedCyclesPrePost_CGAM.csv"
+root_save = "Y:\\LabMembers\\MTillman\\GitRepos\\Stroke-R01\\results\\stats"
+
+[plots]
+grouping_factors = [
+    # "Speed",
+    # "PrePost",    
+    "SessionOrder",             
+]
+fill_factor = "Subject"
+
+# [[plots.sig_diff_bars]]
+# color = "black"
+# metrics = ["HIP_RMSE_JointAngles_Diff"]
+# Intervention = [
+#     "SHAM1",
+#     "SHAM2",
+#     "RMT30",
+#     "RMT50",
+#     "TOL30",
+#     "TOL50",
+# ]
+
+[plots.colors.Intervention]
+SHAM1 = "#1b9e77"
+SHAM2 = "#d95f02"
+RMT30 = "#7570b3"
+RMT50 = "#e7298a"
+TOL30 = "#66a61e"
+TOL50 = "#e6ab02"
+
+[plots.colors.Speed]
+SSV = "#1b9e77"
+FV = "#d95f02"
+
+[plots.colors.Side]
+A = "#1b9e77"
+U = "#d95f02"
+
+[stats]
+factors_in_model = [
+    "Subject", 
+    "SessionOrder", 
+    # "Speed",
+]
+lmer_formula = "~ SessionOrder + (1 | Subject)"
+emmeans_formula = "~ SessionOrder"
+
+[factor_levels_to_keep]
+# Define the levels to keep for each factor.
+# If a factor is not listed here, all levels will be kept.
+
+[factor_levels_to_remove]
+# Define the levels to remove from each factor. 
+# If a factor is not listed here, no levels will be removed.
+# Same syntax as [factors_levels_order]
+# Intervention = ["SHAM1"]
+Subject = [
+    "SS06",
+    "SS23",
+]
+
+# Define the order of the levels in each factor
+[factors_levels_order]
+Intervention = [
+    "SHAM1",
+    "SHAM2",
+    "RMT30",
+    "RMT50",
+    "TOL30",
+    "TOL50",
+]
+SessionOrder = [1, 2, 3, 4, 5, 6]
+Is_Stim = [
+    "STIM",
+    "NO_STIM",
+]
+Frequency = [
+    "30",
+    "50",
+]
+Intensity = [
+    "RMT",
+    "TOL",
+]
+Speed = [
+    "SSV",
+    "FV",
+]
+Side = [
+    "A",
+    "U",
+]
+PrePost = [
+    "PRE",
+    "POST",
+]

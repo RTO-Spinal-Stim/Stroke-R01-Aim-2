@@ -1,0 +1,52 @@
+{
+    "BASE_PATH": "Y:\\Spinal Stim_Stroke R01\\AIM 2\\Subject Data",
+    "LAST_COMPLETED_SESSIONS": {
+        "SS02": "BL",
+        "SS09": "TX10",
+        "SS10": "TX17"
+    },
+    "DATA_TYPES_LIST": [
+        "Actigraph",
+        "EMG",
+        "Gaitrite",
+        "MVCs",
+        "Polar",
+        "TEPs",
+        "Videos",
+        "XSENS"
+    ],
+    "INTERVENTION_LIST": [
+        "SHAM1",
+        "SHAM2",
+        "30_RMT",
+        "50_RMT",
+        "30_TOL",
+        "50_TOL"
+    ],
+    "SINGLE_FILE_TYPES": [
+        "Gaitrite",
+        "TEPs",
+        "MVCs"
+    ],
+    "SPEEDS_LIST": [
+        "SSV",
+        "FV"
+    ],
+    "DATATYPES_WITHOUT_SPEED": [
+        "TEPs"
+    ],
+    "NUM_REPEAT_FILES": 3,
+    "EXTENSIONS": {
+        "Gaitrite": [".xlsx"],
+        "XSENS": [".mvn", ".xlsx"],
+        "TEPs": [".adicht", ".mat"],
+        "EMG": [".adicht", ".mat"]
+    },    
+    "DATATYPE_INSERT": {
+        "XSENS": "XSENS",
+        "EMG": "EMG"
+    },
+    "REPEAT_PREFIX": {
+        "XSENS": "-00"
+    }
+}
