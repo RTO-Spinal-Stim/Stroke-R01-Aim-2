@@ -27,7 +27,7 @@ subjectLoadPath = fullfile(pathsConfig.ROOT_LOAD, subject);
 % Path to save the data to (flat folder, not per-subject)
 subjectSaveFolder = pathsConfig.ROOT_SAVE;
 % File name will prepend subject ID 
-saveFileName = [subject '_' pathsConfig.SAVE_FILE_NAME];
+saveFileName = [pathsConfig.SAVE_FILE_NAME];
 % Make sure save folder exists
 if ~exist(subjectSaveFolder, 'dir')
     mkdir(subjectSaveFolder);
