@@ -1,24 +1,36 @@
-function [indicesStruct] = getHardwareIndicesFromSeconds(secondsStruct, fs)
+function indicesStruct = getHardwareIndicesFromSeconds(secondsStruct, fs)
 
-%% PURPOSE: CONVERT A STRUCT OF GAIT EVENTS, GAIT PHASE ONSET & TERMINATION, AND GAIT PHASE DURATIONS FROM SECONDS TO SAMPLES
-% secondsStruct fields: gaitEvents, gaitPhases, gaitPhasesDurations
+% PURPOSE:
+% Convert gait events given in ABSOLUTE seconds into sample indices for EMG/IMU
+% where EMG fs = 2000 and IMU fs = 100 share the same hardware time sync.
 
 indicesStruct = struct;
-secondsStructFieldNames = fieldnames(secondsStruct);
-numDigits = length(num2str(fs));
-for i = 1:length(secondsStructFieldNames)
-    fieldName = secondsStructFieldNames{i};
+fields = fieldnames(secondsStruct);
+
+for f = 1:length(fields)
+    fieldName = fields{f};
     indicesStruct.(fieldName) = struct;
 
-    subFieldNames = fieldnames(secondsStruct.(fieldName));
-    for j = 1:length(subFieldNames)
-        subFieldName = subFieldNames{j};
-        indicesStruct.(fieldName).(subFieldName) = round(round(secondsStruct.(fieldName).(subFieldName), numDigits-1) .* fs); % Second round is to remove the zeros (and approximation errors?)
-        noNaNVals = indicesStruct.(fieldName).(subFieldName);
-        noNaNVals(isnan(noNaNVals)) = [];
-        if ~all(rem(noNaNVals,1)==0)
-            error('Not whole-number indices');
+    subFields = fieldnames(secondsStruct.(fieldName));
+
+    for s = 1:length(subFields)
+        subField = subFields{s};
+
+        t = secondsStruct.(fieldName).(subField);
+
+        % Convert seconds → samples (global clock → sample index)
+        idx = round(t * fs);
+
+        % Preserve NaNs
+        idx(isnan(t)) = NaN;
+
+        % Store
+        indicesStruct.(fieldName).(subField) = idx;
+
+        % Verify no float drift
+        nonNaN = idx(~isnan(idx));
+        if ~all(rem(nonNaN,1) == 0)
+            error('Non-integer sample index — check time sync precision.');
         end
     end
-
 end

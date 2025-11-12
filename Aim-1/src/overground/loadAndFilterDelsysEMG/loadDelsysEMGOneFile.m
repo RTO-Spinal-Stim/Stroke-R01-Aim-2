@@ -17,7 +17,11 @@ end
 %% Parse each of the muscles from the 1xN vector of EMG data
 % Extract muscle names from the loaded data
 muscle_names = strrep(cellstr(from_file_data.titles), '''', '');
-muscle_names = muscle_names(1:length(muscle_names)-1);
+
+% Remove channel containing 'stim' (case-insensitive) -- Which is not a
+% muscle channel
+stim_mask = contains(lower(muscle_names), 'stim');
+muscle_names = muscle_names(~stim_mask);
 
 loaded_data = struct();
 nan_idx = struct();
