@@ -1,13 +1,16 @@
+% add branch files to path
+addpath(genpath(fullfile(pwd, 'Aim-1\src\overground')));
 % Run from src/overground folder
-configPath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
+configPath = 'src\overground\config_Aim2.json';
 config = jsondecode(fileread(configPath));
 
+% Path to matlab packages, downloaded from file exchange, do not change.
 addpath(genpath('Y:\LabMembers\MTillman\MATLAB_FileExchange_Repository'));
-
+  
 runConfig = toml.map_to_struct(toml.read('subjects_to_run.toml'));
 allSubjects = runConfig.subjects.run;
 
-addpath(genpath('Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\Aim-1\src\overground'));
+
 
 %% Iterate over each subject
 doPlot = false;
@@ -18,8 +21,22 @@ for subNum = 1:length(allSubjects)
 end
 
 %% Load the 10MWT REDCap report
-tenMWTreportPath = "Y:\Spinal Stim_Stroke R01\AIM 2\Subject Data\REDCap Reports\SpinalStimStrokeAim2-10MWTAll_DATA_2025-09-23_1303.csv";
+tenMWTreportPath = "Y:\Spinal Stim_Stroke R01\AIM 2\Subject Data\REDCap Reports\SpinalStimStrokeAim2-10MWTAll_DATA_LABELS_2025-10-08_1045.csv";
 tenMWTreportTable = load10MWTREDCapReport(tenMWTreportPath);
+
+% Define relative folder
+outDir = fullfile('..','..','SavedOutcomesAim2','Redcap');  % go up 2 levels from src/overground
+
+% Make sure folder exists
+if ~exist(outDir, 'dir')
+    mkdir(outDir);
+end
+
+% Define output file name
+outFile = fullfile(outDir, 'tenMWTreportTable.csv');
+
+% Write table
+writetable(tenMWTreportTable, outFile);
 
 %% Plot each subject
 allSubjectsPlot = runConfig.subjects.plot;
@@ -37,7 +54,7 @@ for subNum = 1:length(allSubjectsPlot)
 end
 
 %% Load the cycleTable and matchedCycleTable from all subjects
-configPath = 'Y:\LabMembers\MTillman\GitRepos\Stroke-R01-Aim-2\src\overground\config_Aim2.json';
+configPath = 'src\overground\config_Aim2.json';
 config = jsondecode(fileread(configPath));
 categoricalCols = {'Subject','Intervention','Speed','Trial','Cycle','StartFoot'};
 cycleTableAll = readtable(config.PATHS.ALL_DATA_CSV.UNMATCHED);
@@ -118,7 +135,7 @@ cycleTableAllUA = convertLeftRightSideToAffectedUnaffected(cycleTableAllSym, red
 matchedCycleTableAllUA = convertLeftRightSideToAffectedUnaffected(matchedCycleTableAllSym, reducedDemographics, inputTableSideCol, demographicsSideCol);
 
 %% Save the unaffected and affected side tables
-tablesPathPrefixMergedUA = 'Y:\LabMembers\MTillman\SavedOutcomesAim2\Overground_EMG_Kinematics\MergedTablesAffectedUnaffected';
+tablesPathPrefixMergedUA = "../../SavedOutcomesAim2/Overground_EMG_Kinematics/1_FromMATLAB_Sym";
 writetable(trialTableAllUA, fullfile(tablesPathPrefixMergedUA, 'trialTableAll.csv'));
 writetable(matchedCycleTableAllUA, fullfile(tablesPathPrefixMergedUA, 'matchedCycles.csv'));
 writetable(cycleTableAllUA, fullfile(tablesPathPrefixMergedUA, 'unmatchedCycles.csv'));

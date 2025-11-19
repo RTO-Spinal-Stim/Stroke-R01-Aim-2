@@ -1,0 +1,306 @@
+# .github/workflows/process-status-updates.yml
+name: Process Status Updates
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-status-update:
+    if: contains(github.event.issue.title, 'Status Update')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Extract and process status data
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.PROJECT_TOKEN }}
+        script: |
+          const botOctokit = new github.constructor({ auth: process.env.GITHUB_TOKEN });
+          const issue = context.payload.issue;
+          const issueBody = issue.body;
+          const projectMatch = issueBody.match(/\*\*Project:\*\*\s*(\d+)/);
+          const projectNumber = projectMatch ? parseInt(projectMatch[1], 10) : null;
+
+          console.log(`Processing status update for project #${projectNumber}`);
+          
+          // Extract JSON data from the comment
+          const dataMatch = issueBody.match(/<!-- STATUS_UPDATE_DATA\n([\s\S]*?)\n-->/);
+          if (!dataMatch) {
+            console.log('No status update data found in issue');
+            return;
+          }
+          
+          let updates;
+          try {
+            updates = JSON.parse(dataMatch[1]);
+          } catch (error) {
+            console.log('Failed to parse status update data:', error);
+            return;
+          }
+          
+          console.log('Processing updates:', updates);
+
+          // Debug query to see all accessible projects
+          const debugQuery = `
+            query($owner: String!) {
+              organization(login: $owner) {
+              projectsV2(first: 10) {
+                  nodes {
+                    id
+                    title
+                    number
+                    public
+                  }
+                }
+              }
+            }
+          `;
+
+          const debugResponse = await github.graphql(debugQuery, {
+            owner: context.repo.owner
+          });
+
+          console.log('Accessible projects:', debugResponse.organization.projectsV2.nodes);
+          
+          // Query the project by number
+          const projectQuery = `
+              query($owner: String!, $number: Int!) {
+                organization(login: $owner) {
+                  projectV2(number: $number) {
+                    id
+                    title
+                    number
+                  }
+                }
+              }
+          `;
+          
+          const projectResponse = await github.graphql(projectQuery, {
+            owner: context.repo.owner,
+            number: projectNumber
+          });
+          
+          // Find project #2 or use the first available project
+          const project = projectResponse.organization.projectV2;
+          
+          if (!project) {
+            console.log('No project with that number found for this repository (using secret).');
+            return;
+          }
+          
+          console.log(`Found project: ${project.title} (ID: ${project.id})`);
+          
+          // Get project fields (including status field)
+          const fieldsQuery = `
+            query($projectId: ID!) {
+              node(id: $projectId) {
+                ... on ProjectV2 {
+                  fields(first: 20) {
+                    nodes {
+                      ... on ProjectV2Field {
+                        id
+                        name
+                        dataType
+                      }
+                      ... on ProjectV2SingleSelectField {
+                        id
+                        name
+                        dataType
+                        options {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          `;
+          
+          const fieldsResponse = await github.graphql(fieldsQuery, {
+            projectId: project.id
+          });
+          
+          // Find the status field
+          const statusField = fieldsResponse.node.fields.nodes.find(field => 
+            field.name.toLowerCase() === 'status'
+          );
+          
+          if (!statusField) {
+            console.log('No status field found in project');
+            return;
+          }
+          
+          console.log(`Found status field: ${statusField.name} (ID: ${statusField.id})`);
+          
+          // Process each update
+          const processedUpdates = [];
+          
+          for (const update of updates) {
+            const { issue_number, status, comment, user } = update;
+            
+            try {
+              // Get the issue to find its project item
+              const issueQuery = `
+                query($owner: String!, $repo: String!, $issueNumber: Int!) {
+                  repository(owner: $owner, name: $repo) {
+                    issue(number: $issueNumber) {
+                      id
+                      projectItems(first: 10) {
+                        nodes {
+                          id
+                          project {
+                            id
+                            title
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `;
+              
+              const issueResponse = await github.graphql(issueQuery, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issueNumber: issue_number
+              });
+              
+              const issueData = issueResponse.repository.issue;
+              
+              // Find the project item for our project
+              const projectItem = issueData.projectItems.nodes.find(item => 
+                item.project.id === project.id
+              );
+              
+              if (!projectItem) {
+                console.log(`Issue #${issue_number} is not in the project`);
+                continue;
+              }
+              
+              // Find the matching status option
+              const statusOption = statusField.options?.find(option => 
+                option.name.toLowerCase() === status.toLowerCase() ||
+                option.name.toLowerCase() === status.replace('_', ' ').toLowerCase()
+              );
+              
+              if (!statusOption) {
+                console.log(`No matching status option found for "${status}" in project`);
+                console.log('Available options:', statusField.options?.map(o => o.name));
+                continue;
+              }
+              
+              // Update the project item status
+              const updateMutation = `
+                mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: ProjectV2FieldValue!) {
+                  updateProjectV2ItemFieldValue(input: {
+                    projectId: $projectId
+                    itemId: $itemId
+                    fieldId: $fieldId
+                    value: $value
+                  }) {
+                    projectV2Item {
+                      id
+                    }
+                  }
+                }
+              `;
+              
+              await github.graphql(updateMutation, {
+                projectId: project.id,
+                itemId: projectItem.id,
+                fieldId: statusField.id,
+                value: {
+                  singleSelectOptionId: statusOption.id
+                }
+              });
+              
+              // Add comment to the issue if provided
+              let updateComment;
+              if (comment) {
+                updateComment = `**Status Update by @${user}:**\n` +
+                  `Status: ${prettifyStatus(status)}\n\n` +
+                  `Comment: ${comment}`;
+                                
+              } else {
+                // If no comment provided, just log the status update
+                updateComment = `**Status Update by @${user}:**\n` +
+                  `Status: ${prettifyStatus(status)}`;
+              }
+
+              // Create a comment on the issue
+              await botOctokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue_number,
+                  body: updateComment
+                });
+              
+              processedUpdates.push({
+                issue_number,
+                status: statusOption.name,
+                success: true
+              });
+              
+              console.log(`Successfully updated issue #${issue_number} to status "${statusOption.name}"`);
+              
+            } catch (error) {
+              console.log(`Failed to update issue #${issue_number}:`, error);
+              processedUpdates.push({
+                issue_number,
+                status,
+                success: false,
+                error: error.message
+              });
+            }
+          }
+          
+          // Close the status update issue
+          await github.rest.issues.update({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue.number,
+            state: 'closed'
+          });
+          
+          // Add a summary comment
+          const successfulUpdates = processedUpdates.filter(u => u.success);
+          const failedUpdates = processedUpdates.filter(u => !u.success);
+          
+          let summaryComment = `## Status Update Summary\n\n`;
+          
+          if (successfulUpdates.length > 0) {
+            summaryComment += `✅ **Successfully updated ${successfulUpdates.length} issue(s):**\n`;
+            summaryComment += successfulUpdates.map(u => 
+              `- #${u.issue_number}: ${prettifyStatus(u.status)} ${u.status}`
+            ).join('\n');
+          }
+          
+          if (failedUpdates.length > 0) {
+            summaryComment += `\n\n❌ **Failed to update ${failedUpdates.length} issue(s):**\n`;
+            summaryComment += failedUpdates.map(u => 
+              `- #${u.issue_number}: ${u.error}`
+            ).join('\n');
+          }
+          
+          if (processedUpdates.length === 0) {
+            summaryComment += `⚠️ No issues were updated. Please check the status update data format.`;
+          }
+          
+          await botOctokit.request('POST /repos/{owner}/{repo}/issues/{issue_number}/comments', {
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue.number,
+            body: summaryComment
+          });
+          
+          function prettifyStatus(status) {
+            return status.replace('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
+          }
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

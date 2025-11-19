@@ -2,14 +2,14 @@
 % The main pipeline for R01 Stroke Spinal Stim Aim 2 (using tables)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Comment this part out when running all subjects at once.
+% clc;
+% clearvars;
 addpath(genpath(pwd));
-clc;
-clearvars;
-subject = 'SS10';
-configFilePath = 'src\overground\config_Aim2.json';
-config = jsondecode(fileread(configFilePath));
-disp(['Loaded configuration from: ' configFilePath]);
-doPlot = false;
+% subject = 'SS10';
+% configFilePath = 'src\overground\config_Aim2.json';
+% config = jsondecode(fileread(configFilePath));
+% disp(['Loaded configuration from: ' configFilePath]);
+% doPlot = false;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Get configuration
 intervention_folders = config.INTERVENTION_FOLDERS;
@@ -21,14 +21,22 @@ xsensConfig = config.XSENS;
 regexsConfig = config.REGEXS;
 missingFilesPartsToCheck = config.MISSING_FILES;
 
-% Folder to load the data from.
+% Folder to load the data from
 pathsConfig = config.PATHS;
 subjectLoadPath = fullfile(pathsConfig.ROOT_LOAD, subject);
-% Path to save the data to.
-subjectSaveFolder = fullfile(pathsConfig.ROOT_SAVE, subject);
-saveFileName = pathsConfig.SAVE_FILE_NAME;
-codeFolderPath = pathsConfig.CODE_FOLDER_PATH; % Folder where the code lives
+% Path to save the data to (flat folder, not per-subject)
+subjectSaveFolder = pathsConfig.ROOT_SAVE;
+% File name will prepend subject ID 
+saveFileName = [subject '_' pathsConfig.SAVE_FILE_NAME];
+% Make sure save folder exists
+if ~exist(subjectSaveFolder, 'dir')
+    mkdir(subjectSaveFolder);
+end
+% Code folder path
+codeFolderPath = pathsConfig.CODE_FOLDER_PATH;
 addpath(genpath(pathsConfig.CODE_FOLDER_PATH));
+
+
 
 %% Initialize outcome measure tables
 trialTable = table; % Each row is one trial, all data
@@ -124,8 +132,8 @@ cycleTable = addToTable(cycleTable, delsysDownsampledTable);
 subject_mvc_folder = fullfile(subjectLoadPath, delsysConfig.MVC_FOLDER_NAME);
 mvcTable = loadMVCAllInterventions(delsysConfig, subject_mvc_folder, intervention_folders, mapped_interventions, regexsConfig, missingFilesPartsToCheck);
 
-%% Filter MVC
-mvcTableFiltered = filterDelsys(mvcTable, 'MVC_Loaded', 'MVC_Filtered', delsysConfig.FILTER, delsysConfig.SAMPLING_FREQUENCY);
+%% Filter MVC, must put 'true' for MVC specific filter
+mvcTableFiltered = filterDelsys(mvcTable, 'MVC_Loaded', 'MVC_Filtered', delsysConfig.FILTER, delsysConfig.SAMPLING_FREQUENCY, true);
 mvcTable = addToTable(mvcTable, mvcTableFiltered);
 
 %% Identify the max EMG data value across one whole visit (all trials & gait cycles)
