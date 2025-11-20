@@ -62,16 +62,16 @@ num_files_per_ext = 6
 ## The list of subjects and their last completed session
 [[subjects]]
 id = "SS02"
-last_session = "TX3"
+last_session = "TX13"
 
 [[subjects]]
 id = "SS09"
-last_session = "MID24"
+last_session = "POST24"
 
 [[subjects]]
 id = "SS10"
-last_session = "TX19"
+last_session = "MO1FU"
 
-[[subjects]]
-id = "SS21"
-last_session = "BL"
+# [[subjects]]
+# id = "SS21"
+# last_session = "BL"
